@@ -1,0 +1,28 @@
+version: "2"
+services:
+    mariadb:
+        image: "mariadb"
+        expose:
+            - "3306"
+        volumes:
+            - "mariadb:/var/lib/mysql"
+    guacd:
+        image: "glyptodon/guacd"
+        expose:
+            - "4822"
+    guacamole:
+        image: "glyptodon/guacamole"
+        ports:
+            - "127.0.0.1:8080:8080"
+        links:
+            - "guacd:guacd"
+            - "mariadb:mysql"
+        environment:
+            - "GUACD_PORT_4822_TCP_ADDR=guacd" #Get around old style link checks
+            - "GUACD_PORT_4822_TCP_PORT=4822" #Get around old style link checks
+            - "MYSQL_DATABASE=guac"
+            - "MYSQL_USER=guac"
+            - "MYSQL_PASSWORD=guac"
+            - "MYSQL_HOSTNAME=mariadb"
+volumes:
+    mariadb:
